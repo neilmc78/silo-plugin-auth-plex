@@ -1,0 +1,131 @@
+{
+  "plugin_id": "neilmc78.auth.plex",
+  "version": "0.1.0",
+  "checksum": "__CHECKSUM__",
+  "silo_api_version": "v1",
+  "category": "Sign-in",
+  "presentation": {
+    "display_name": "Plex Sign-in",
+    "summary": "Sign in to Silo with a Plex account that can reach your Plex server.",
+    "description_markdown": "Adds a \"Sign in with Plex\" button. The person approves Silo on Plex's own sign-in page, and the plugin lets them in only while their Plex account can reach the Plex Media Server you name: its owner, or someone it is shared with. Silo re-checks the account later and signs the person out once the server is no longer shared with them.",
+    "setup_markdown": "1. Open `http://<plex-server>:32400/identity` and copy the `machineIdentifier` value.\n2. Paste it under **Plex server**, save, and run the connection test.\n3. On Silo's Sign-in settings page, decide whether Plex sign-in may create accounts. On: anyone your Plex server is shared with gets a Silo account the first time they sign in. Off: only existing Silo accounts that were linked to Plex can sign in.\n4. Nothing has to be registered at Plex. Silo's public URL must be reachable from the browser, because Plex sends the browser back to it.",
+    "homepage_url": "https://github.com/neilmc78/silo-plugin-auth-plex",
+    "source_url": "https://github.com/neilmc78/silo-plugin-auth-plex",
+    "support_url": "https://github.com/neilmc78/silo-plugin-auth-plex/issues",
+    "changelog_url": "https://github.com/neilmc78/silo-plugin-auth-plex/releases",
+    "publisher_name": "neilmc78",
+    "publisher_url": "https://github.com/neilmc78",
+    "license_spdx": "AGPL-3.0-or-later"
+  },
+  "supported_platforms": [
+    {
+      "os": "linux",
+      "arch": "amd64"
+    },
+    {
+      "os": "linux",
+      "arch": "arm64"
+    }
+  ],
+  "capabilities": [
+    {
+      "type": "auth_provider.v1",
+      "id": "plex",
+      "display_name": "Plex",
+      "description": "Sign in with a Plex account that can reach your Plex server.",
+      "auth_modes": [
+        "oauth2"
+      ],
+      "metadata": {
+        "connection_test": true
+      }
+    },
+    {
+      "type": "http_routes.v1",
+      "id": "assets",
+      "display_name": "Sign-in button assets",
+      "description": "Serves the login button icon."
+    }
+  ],
+  "http_routes": [
+    {
+      "id": "assets",
+      "method": "GET",
+      "path": "/assets/*",
+      "access": "public"
+    }
+  ],
+  "global_config_schema": [
+    {
+      "key": "display_name",
+      "title": "Button label",
+      "description": "Silo shows it on the login button and in sentences such as \"Connect Plex\", so leave out \"Sign in with\".",
+      "json_schema": "{\"type\":\"object\",\"properties\":{\"value\":{\"type\":\"string\",\"maxLength\":80}},\"additionalProperties\":false}",
+      "required": false,
+      "admin_form": {
+        "submit_label": "Save label",
+        "fields": [
+          {
+            "key": "value",
+            "label": "Button label",
+            "description": "Shown on the login page and in the apps.",
+            "control": "ADMIN_FORM_CONTROL_TEXT",
+            "placeholder": "Plex",
+            "default_value": "Plex",
+            "validation": {
+              "max_length": 80
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "icon_url_path",
+      "title": "Button icon",
+      "description": "Icon on the login button, served by this plugin under /assets/.",
+      "json_schema": "{\"type\":\"object\",\"properties\":{\"value\":{\"type\":\"string\",\"enum\":[\"plex.png\"],\"default\":\"plex.png\"}},\"additionalProperties\":false}",
+      "required": false,
+      "admin_form": {
+        "submit_label": "Save icon",
+        "fields": [
+          {
+            "key": "value",
+            "label": "Icon file",
+            "description": "The login button uses plex.png until this setting is saved.",
+            "control": "ADMIN_FORM_CONTROL_SELECT",
+            "default_value": "plex.png",
+            "options": [
+              {
+                "value": "plex.png",
+                "label": "Play icon, PNG (all apps)"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "key": "server",
+      "title": "Plex server",
+      "description": "Only Plex accounts that can reach this server may sign in: its owner and the people it is shared with.",
+      "json_schema": "{\"type\":\"object\",\"properties\":{\"machine_identifier\":{\"type\":\"string\",\"maxLength\":128}},\"additionalProperties\":false}",
+      "required": true,
+      "admin_form": {
+        "submit_label": "Save server",
+        "fields": [
+          {
+            "key": "machine_identifier",
+            "label": "Machine identifier",
+            "description": "The machineIdentifier value at http://<plex-server>:32400/identity.",
+            "control": "ADMIN_FORM_CONTROL_TEXT",
+            "placeholder": "0123456789abcdef0123456789abcdef01234567",
+            "required": true,
+            "validation": {
+              "max_length": 128
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
